@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    {{msg}}
+    <div :id="msg"></div>
+    <ul>
+      <!-- <li v-for="item in list">
+        <span v-if="item.del">{{item.title}}</span>
+        <span v-else style="text-decoration: line-through;">
+          {{item.title}}
+        </span>
+        <button v-show="!item.del">删除</button>
+      </li> -->
+      <todo-item v-for="item in list" id="my" data-test="test" :title="item.title" :del="item.del"></todo-item>
+    </ul>
+    <todo-list>
+      <!-- vue2.5之前的语法 -->
+      <todo-item @delete="handleDel" v-for="item in list" id="my" data-test="test" :title="item.title" :del="item.del">
+        <span slot="pre-icon">前置图标</span>
+        <span slot="suf-icon">后置图标</span>
+      </todo-item>
+      <!-- vue2.6 -->
+      <todo-item @delete="handleDel" v-for="item in list" id="my" data-test="test" :title="item.title" :del="item.del">
+        <template v-slot:pre-icon="{value}">
+          <span>前置图标 {{value}}</span>
+        </template>
+        <!-- <template v-slot:suf-icon>
+          <span>后置图标</span>
+        </template> -->
+      </todo-item>
+    </todo-list>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    Vue.component('todo-item', {
+      props: {
+        title: String,
+        del: {
+          type: Boolean,
+          default: false,
+        }
+      },
+      template: `
+      <li>
+        <slot name="pre-icon" :value="value"></slot>
+        <span v-if="del">{{title}}</span>
+        <span v-else style="text-decoration: line-through;">
+          {{title}}
+        </span>
+        <!-- 默认值 -->
+        <slot name="suf-icon">🐶🐶</slot>
+        <button v-show="!del" @click="handleClick">删除</button>
+      </li>
+      `,
+      data: function () {
+        return {
+          value: Math.random()
+        }
+      },
+      methods: {
+        // 原生DOM绑定方法
+        handleClick(e) {
+          console.log('点击删除', e)
+          this.$emit('delete', this.title, e)
+          this.$emit('save', this.title) // 无效
+        }
+      }
+    })
+    Vue.component('todo-list', {
+      template: `
+      <ul>
+        <slot></slot>
+      </ul>
+      `,
+      data: function () {
+        return {
+          list: [{
+            title: 'zu1',
+            del: false
+          }, {
+            title: 'zu2',
+            del: true
+          }, {
+            title: 'zu3',
+            del: true
+          }]
+        }
+      },
+      methods: {
+        // 自定义组件绑定方法(需要子组件手动抛出事件)
+        handleDel(val, e) {
+          console.log('handleDel', val, e)
+        },
+      }
+    })
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        msg: 'hello',
+        list: [{
+          title: 'zu1',
+          del: false
+        }, {
+          title: 'zu2',
+          del: true
+        }, {
+          title: 'zu3',
+          del: true
+        }]
+      },
+      methods: {
+        handleDel(val, e) {
+          console.log('handleDel', val, e)
+        },
+      }
+    })
+  </script>
+</body>
+
+</html>
