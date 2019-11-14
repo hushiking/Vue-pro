@@ -52,7 +52,7 @@
         // 原生DOM绑定方法
         handleClick(e) {
           console.log('点击删除', e)
-          this.$emit('delete', this.title, e)
+          this.$emit('my-delete', this.title, e)
           this.$emit('save', this.title) // 无效
         }
       }
@@ -60,7 +60,7 @@
     Vue.component('todo-list', {
       template: `
       <ul @save="handleSave">
-        <todo-item @delete="handleDel" v-for="item in list" id="my" data-test="test" :title="item.title" :del="item.del"></todo-item>
+        <todo-item @my-delete="handleDel" v-for="item in list" id="my" data-test="test" :title="item.title" :del="item.del"></todo-item>
       </ul>
       `,
       data: function () {
